@@ -2,10 +2,15 @@ var app = angular.module('tvchat.services.userService', []);
 
 
 app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup, ngFB, $firebaseAuth) {
-
+	
 	var self = {
 		/* This contains the currently logged in user */
-		current: {},
+		current:{
+			name:  localStorage.getItem('name'),
+			email:  localStorage.getItem('email'),
+			profilePic:  localStorage.getItem('profilePic'),
+			userId: localStorage.getItem('uid')
+		},
 
 		/*
 		 Makes sure the favorites property is preset on the current user.
@@ -86,7 +91,13 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 								// All good, resolve the promise and lets rock!
 								//
 								console.log("Signed in as:", firebaseUser.uid);
-								console.log(firebaseUser);
+								
+								localStorage.setItem('uid', firebaseUser.uid );
+								localStorage.setItem('email', firebaseUser.email);
+								localStorage.setItem('profilePic', firebaseUser.photoURL);
+								localStorage.setItem('name', firebaseUser.displayName);
+								localStorage.setItem('uid', firebaseUser.uid);
+								//console.log(firebaseUser);
 								d.resolve();
 							})
 							.catch(function (error) {

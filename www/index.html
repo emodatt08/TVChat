@@ -21,15 +21,18 @@
 	<script src="lib/angular-moment/angular-moment.min.js" ></script >
 	<script src="lib/openfb/openfb.js" ></script >
 	<script src="lib/openfb/ngopenfb.js" ></script >
+	<!-- <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase.js"></script> -->
 	<script>
-	  // Initialize Firebase
-	  var config = {
-	    apiKey: "AIzaSyCe03v-2o6AnUOGyghGD4XAkGpECKrlh8s",
-	    authDomain: "https://fango-87900.firebaseapp.com",
-	    databaseURL: "https://fango-87900.firebaseio.com",
-	    storageBucket: "https://fango-87900.appspot.com"
-	  };
-	  firebase.initializeApp(config);
+		// Initialize Firebase
+		var config = {
+			apiKey: "AIzaSyCe03v-2o6AnUOGyghGD4XAkGpECKrlh8s",
+			authDomain: "fango-87900.firebaseapp.com",
+			databaseURL: "https://fango-87900.firebaseio.com",
+			projectId: "fango-87900",
+			storageBucket: "fango-87900.appspot.com",
+			messagingSenderId: "281499756811"
+		};
+		firebase.initializeApp(config);
 	</script>
 
 	<!-- cordova script (this will be a 404 during development) -->
