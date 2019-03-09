@@ -1,7 +1,7 @@
 var app = angular.module('tvchat.services.userService', []);
 
 
-app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup, ngFB, $firebaseAuth) {
+app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup, ngFB, $firebaseAuth, $firebaseArray) {
 	
 	var self = {
 		/* This contains the currently logged in user */
@@ -9,8 +9,10 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 			name:  localStorage.getItem('name'),
 			email:  localStorage.getItem('email'),
 			profilePic:  localStorage.getItem('profilePic'),
-			userId: localStorage.getItem('uid')
+			userId: localStorage.getItem('uid'),
+			favorites: localStorage.getItem('favorites')
 		},
+		
 
 		/*
 		 Makes sure the favorites property is preset on the current user.
@@ -35,7 +37,8 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 			} else {
 				self.addFavorite(show)
 			}
-			self.current.$save();
+			//self.current.favorites.$save(show);
+			self.saveFavorites(show);
 		},
 		/*
 		 Adds a show to the users favorites shows list
@@ -57,6 +60,33 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 		logoutUser: function () {
 			var auth = $firebaseAuth();
 			return auth.$signOut();
+		},
+
+		saveFavorites: function(show){
+			var user = firebase.auth().currentUser;
+
+			user.updateProfile({
+				favorites:show
+			}).then(function () {
+				// Update successful.
+				console.log("worked");
+			}, function (error) {
+				// An error happened.
+					console.log("did not worked");
+			});
+		},
+		removeFavorites: function (show) {
+			var user = firebase.auth().currentUser;
+
+			user.updateProfile({
+				favorites: show
+			}).then(function () {
+				// Update successful.
+				console.log("worked");
+			}, function (error) {
+				// An error happened.
+				console.log("did not worked");
+			});
 		},
 		/*
 		 Login the user
@@ -97,6 +127,7 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 								localStorage.setItem('profilePic', firebaseUser.photoURL);
 								localStorage.setItem('name', firebaseUser.displayName);
 								localStorage.setItem('uid', firebaseUser.uid);
+								localStorage.setItem('favorites', firebaseUser.favorites);
 								//console.log(firebaseUser);
 								d.resolve();
 							})
