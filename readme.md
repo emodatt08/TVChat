@@ -5,10 +5,10 @@ Tv Chat App is a firebase Ionic chat App. Firebase's Realtime database serves as
 
 <h2 id="screenshots">Screenshots</h2>
 
-![](assets/3.png)
-![](assets/1.png)
-![](assets/2.png)
-![](assets/4.png)
+![](assets/3.JPG)
+![](assets/1.JPG)
+![](assets/2.JPG)
+![](assets/4.JPG)
 
 
 <h2 id="development">Development</h2>
