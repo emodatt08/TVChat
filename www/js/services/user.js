@@ -2,7 +2,7 @@ var app = angular.module('tvchat.services.userService', []);
 
 
 app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup, ngFB, $firebaseAuth, $firebaseArray) {
-	
+	//console.log("Im here", self.getFavorites());
 	var self = {
 		/* This contains the currently logged in user */
 		current:{
@@ -10,7 +10,7 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 			email:  localStorage.getItem('email'),
 			profilePic:  localStorage.getItem('profilePic'),
 			userId: localStorage.getItem('uid'),
-			favorites: localStorage.getItem('favorites')
+			favorites: []
 		},
 		
 
@@ -22,7 +22,7 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 		 */
 		ensureFavorite: function () {
 			if (!self.current.favorites) {
-				self.current.favorites = {};
+				self.current.favorites = [];
 			}
 		},
 
@@ -64,29 +64,64 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 
 		saveFavorites: function(show){
 			var user = firebase.auth().currentUser;
-
-			user.updateProfile({
-				favorites:show
+			var favoritesRef = firebase.database().ref().child("favorites");
+			var items = $firebaseArray(favoritesRef);
+			
+			items.$add({
+				name: show.name,
+				network: show.network,
+				showid: show.showid,
+				userId: user.uid
 			}).then(function () {
 				// Update successful.
-				console.log("worked");
+				console.log("adding favorites success");
 			}, function (error) {
 				// An error happened.
-					console.log("did not worked");
+					console.log("adding favorites did not worked");
 			});
+			//localStorage.setItem('favorites', items.show);
+		},
+		getFavorites: function () {
+			var user = firebase.auth().currentUser;
+			var favoritesRef = firebase.database().ref().child("favorites");
+			// var items = $firebaseArray(favoritesRef);
+			var query = favoritesRef
+				.orderByChild("userId")
+				.equalTo(user.uid);
+			var userFavorites = $firebaseArray(query);
+			//localStorage.setItem('favorites', JSON.parse(self.));
+			userFavorites.$loaded()
+				.then(function () {
+					angular.forEach(userFavorites, function (user) {
+						console.log("favorites data :",user);
+						self.current.favorites.push(user);
+						
+					})
+				});
+			//self.current.favorites = userFavorites;
+			//return userFavorites;
+			
+			
 		},
 		removeFavorites: function (show) {
 			var user = firebase.auth().currentUser;
+			self.current.favorites.splice(0, 1);
+			console.log(user);
+			var favoritesRef = firebase.database().ref().child("favorites");
+			// var items = $firebaseArray(favoritesRef);
+			var query = favoritesRef
+				.orderByChild("showid")
+				.equalTo(show.showId).remove();
 
-			user.updateProfile({
-				favorites: show
-			}).then(function () {
-				// Update successful.
-				console.log("worked");
-			}, function (error) {
-				// An error happened.
-				console.log("did not worked");
-			});
+			// user.updateProfile({
+			// 	favorites: ""
+			// }).then(function () {
+			// 	// Update successful.
+			// 	console.log("worked");
+			// }, function (error) {
+			// 	// An error happened.
+			// 	console.log("did not worked");
+			// });
 		},
 		/*
 		 Login the user
@@ -120,14 +155,16 @@ app.service('UserService', function ($q, $rootScope, $localstorage, $ionicPopup,
 								//
 								// All good, resolve the promise and lets rock!
 								//
-								console.log("Signed in as:", firebaseUser.uid);
+								console.log("Signed in as:", firebaseUser);
+								//console.log(firebaseUser.displayName + "'s favorites", self.getFavorites());
+								
 								
 								localStorage.setItem('uid', firebaseUser.uid );
 								localStorage.setItem('email', firebaseUser.email);
 								localStorage.setItem('profilePic', firebaseUser.photoURL);
 								localStorage.setItem('name', firebaseUser.displayName);
 								localStorage.setItem('uid', firebaseUser.uid);
-								localStorage.setItem('favorites', firebaseUser.favorites);
+								localStorage.setItem("favorites", self.getFavorites());
 								//console.log(firebaseUser);
 								d.resolve();
 							})
